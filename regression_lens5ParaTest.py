@@ -65,8 +65,12 @@ histlist = sorted(glob.glob(DirIn + hyperpara + '*.npy'))
 print(len(filelist))
 
 for i in range(len(filelist)):
-    fileIn = filelist[i]
-    histIn = histlist[i]
+    # fileIn = filelist[i]
+    fileIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/RegressionStackNew_opti1_loss0_lr0.001_decay0.1_batch16_epoch10.hdf5'
+    #
+    # histIn = histlist[i]
+    histIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/RegressionStackNew_opti1_loss0_lr0.001_decay0.1_batch16_epoch10.npy'
+
     loaded_model = load_model(fileIn)
     print(fileIn)
     history = np.load(histIn)
@@ -145,8 +149,6 @@ def read_and_normalize_test_data():
     return test_data, test_target
 
 
-
-
 rescaleMin, rescaleMax = np.load(Dir1 + Dir2 + Dir3 + 'RescalingMinMax5para.npy')
 print(rescaleMin.shape)
 
@@ -212,8 +214,6 @@ ax[0, 2].axis('equal')
 ax[1, 0].axis('equal')
 ax[1, 1].axis('equal')
 
-
-
 ax[0, 0].set_title('rescaled vel-dispersion')
 ax[0, 1].set_title('rescaled ellipticity')
 ax[0, 2].set_title('rescaled orientation')
@@ -221,8 +221,6 @@ ax[1, 0].set_title('rescaled redshift')
 ax[1, 1].set_title( 'rescaled magnification')
 
 ax[1, 2].set_visible(False)
-
-
 
 plt.show()
 

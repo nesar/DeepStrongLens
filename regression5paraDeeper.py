@@ -18,9 +18,9 @@ data_path = Dir1 + Dir2 + Dir3 + 'TrainingData/'
 names = ['lensed', 'unlensed']
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
-num_epoch = 10
+num_epoch = 100
 batch_size = 16
-learning_rate = 1e-6  # Warning: lr and decay vary across optimizers
+learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
 decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
@@ -29,7 +29,7 @@ image_size = img_rows = 45
 img_cols = 45
 num_channel = 1
 num_classes = 2
-num_files = 800*num_classes
+num_files = 8000*num_classes
 num_samples = num_files
 num_para = 5
 
@@ -41,7 +41,7 @@ def load_train():
     # for name in names:
     for labelID in [0, 1]:
         name = names[labelID]
-        for img_ind in range(num_files / num_classes):
+        for img_ind in range( int(num_files / num_classes) ):
 
             input_img = np.load(data_path + '/' + name + '_outputs/' + name + str(img_ind) + '.npy')
             if np.isnan(input_img).any():
@@ -225,33 +225,33 @@ def create_model():
     model.add(Convolution2D(32, 3, 3))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Convolution2D(64, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(Convolution2D(64, 3, 3, border_mode='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Convolution2D(32, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(Convolution2D(32, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Convolution2D(16, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(Convolution2D(16, 3, 3, border_mode='same' ))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Flatten())
     model.add(Dense(64))
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    # model.add(Dropout(0.5))
     model.add(Dense(num_para))
     model.add(Activation('linear'))
 
@@ -326,7 +326,7 @@ if plotLossAcc:
     plt.show()
 
 
-SaveModel = False
+SaveModel = True
 if SaveModel:
     epochs = np.arange(1, num_epoch+1)
     train_loss = ModelFit.history['loss']
@@ -335,10 +335,10 @@ if SaveModel:
     training_hist = np.vstack([epochs, train_loss, val_loss])
 
 
-    fileOut = 'RegressionStack_opti' + str(opti_id) + '_loss' + str(loss_id) + '_lr' + str(learning_rate) + '_decay' + str(decay_rate) + '_batch' + str(batch_size) + '_epoch' + str(num_epoch)
+    fileOut = 'RegressionStackNew_opti' + str(opti_id) + '_loss' + str(loss_id) + '_lr' + str(learning_rate) + '_decay' + str(decay_rate) + '_batch' + str(batch_size) + '_epoch' + str(num_epoch)
 
-    model.save('ModelOutRegression/' + fileOut + '.hdf5')
-    np.save('ModelOutRegression/'+fileOut+'.npy', training_hist)
+    model.save('/home/nes/Dropbox/Argonne/lensData/' + 'ModelOutRegression/' + fileOut + '.hdf5')
+    np.save('/home/nes/Dropbox/Argonne/lensData/'+'ModelOutRegression/'+fileOut+'.npy', training_hist)
 
 time_j = time.time()
 print(time_j - time_i, 'seconds')
