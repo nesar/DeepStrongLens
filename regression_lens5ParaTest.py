@@ -52,8 +52,8 @@ num_files = num_classes*10
 
 num_epoch = 100
 batch_size = 8
-learning_rate = 1e-2  # Warning: lr and decay vary across optimizers
-decay_rate = 0.1
+learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
+decay_rate = 0.01
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
 
@@ -65,27 +65,24 @@ fileOut = 'RegressionStackNew_opti' + str(opti_id) + '_loss' + str(loss_id) + '_
     num_epoch)
 
 
-# filelist = sorted(glob.glob(DirIn +'*.npy'))   # All
-# hyperpara = '*opti1*lr0.001*decay0.1*batch16*epoch500*'
+# hyperpara = 'Deeper*300*'
 hyperpara = 'RegressionStackNew*'
 
+
 filelist = sorted(glob.glob(DirIn + hyperpara + '*.hdf5'))
+# filelist = sorted(glob.glob(DirIn +'*.npy'))   # All
 histlist = sorted(glob.glob(DirIn + hyperpara + '*.npy'))
 
 print(len(filelist))
-print(filelist)
+print(*filelist, sep='\n')
 
 # for i in range(len(filelist)):
 for i in range(1):
 
     # fileIn = filelist[i]
-    # fileIn =  DirIn +  'RegressionStackNew_opti1_loss0_lr0.001_decay0.01_batch8_epoch100.hdf5'
-
     fileIn = DirIn  + fileOut + '.hdf5'
 
     # histIn = histlist[i]
-    # histIn = DirIn + '/RegressionStackNew_opti1_loss0_lr0.001_decay0.01_batch8_epoch100.npy'
-
     histIn =  DirIn + fileOut + '.npy'
 
 
