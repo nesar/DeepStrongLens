@@ -50,9 +50,23 @@ num_files = num_classes*10
 
 
 
+num_epoch = 100
+batch_size = 8
+learning_rate = 1e-2  # Warning: lr and decay vary across optimizers
+decay_rate = 0.1
+opti_id = 1  # [SGD, Adadelta, RMSprop]
+loss_id = 0 # [mse, mae] # mse is always better
+
+
 # loaded_model = load_model('ModelOutputs/cnn_regressionLens_test2.hdf5')
 
-DirIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/jupiter/ModelOutRegression/'
+DirIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/'
+
+fileOut = 'RegressionStackNew_opti' + str(opti_id) + '_loss' + str(loss_id) + '_lr' + str(
+    learning_rate) + '_decay' + str(decay_rate) + '_batch' + str(batch_size) + '_epoch' + str(
+    num_epoch)
+
+# '/home/nes/Dropbox/Argonne/lensData/' + 'ModelOutRegression/' + fileOut + '.hdf5'
 
 
 # filelist = sorted(glob.glob(DirIn +'*.npy'))   # All
@@ -64,12 +78,23 @@ histlist = sorted(glob.glob(DirIn + hyperpara + '*.npy'))
 
 print(len(filelist))
 
-for i in range(len(filelist)):
+# for i in range(len(filelist)):
+for i in range(1):
+
     # fileIn = filelist[i]
-    fileIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/RegressionStackNew_opti1_loss0_lr0.001_decay0.1_batch16_epoch10.hdf5'
+    fileIn =  DirIn +  'RegressionStackNew_opti1_loss0_lr0.001_decay0.01_batch8_epoch100.hdf5'
+
+    # fileIn = DirIn  + fileOut + '.hdf5'
+
     #
     # histIn = histlist[i]
-    histIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/RegressionStackNew_opti1_loss0_lr0.001_decay0.1_batch16_epoch10.npy'
+    histIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression' \
+             '/RegressionStackNew_opti1_loss0_lr0.001_decay0.01_batch8_epoch100.npy'
+
+    histIn =  DirIn + fileOut + '.npy'
+
+
+
 
     loaded_model = load_model(fileIn)
     print(fileIn)
