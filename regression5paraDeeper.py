@@ -19,8 +19,8 @@ names = ['lensed', 'unlensed']
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
 num_epoch = 100
-batch_size = 8
-learning_rate = 1e-2  # Warning: lr and decay vary across optimizers
+batch_size = 32
+learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
 decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
@@ -251,7 +251,7 @@ def create_model():
     model.add(Flatten())
     model.add(Dense(64))
     model.add(Activation('relu'))
-    # model.add(Dropout(0.5))
+    model.add(Dropout(0.1))
     model.add(Dense(num_para))
     model.add(Activation('linear'))
 
@@ -296,7 +296,7 @@ y_train = train_target[0:num_samples]
 model = create_model()
 
 
-ModelFit = model.fit(X_train, y_train, batch_size=batch_size, nb_epoch= num_epoch, verbose=1,
+ModelFit = model.fit(X_train, y_train, batch_size=batch_size, nb_epoch= num_epoch, verbose=2,
                      validation_split= 0.2 )
 
 # model.save('ModelOutputs/cnn_regressionLens_test2.hdf5')
