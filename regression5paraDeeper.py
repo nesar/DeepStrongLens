@@ -251,7 +251,7 @@ def create_model():
     model.add(Flatten())
     model.add(Dense(64))
     model.add(Activation('relu'))
-    model.add(Dropout(0.1))
+    # model.add(Dropout(0.1))
     model.add(Dense(num_para))
     model.add(Activation('linear'))
 

@@ -51,9 +51,9 @@ num_files = num_classes*10
 
 
 num_epoch = 100
-batch_size = 8
+batch_size = 32
 learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
-decay_rate = 0.001
+decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
 
