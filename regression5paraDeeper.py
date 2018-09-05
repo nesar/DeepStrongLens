@@ -29,7 +29,9 @@ image_size = img_rows = 45
 img_cols = 45
 num_channel = 1
 num_classes = 2
-num_files = 8000*num_classesC
+num_files = 8000*num_classes
+num_samples = num_files
+num_para = 3
 
 
 def load_train():
