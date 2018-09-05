@@ -29,9 +29,7 @@ image_size = img_rows = 45
 img_cols = 45
 num_channel = 1
 num_classes = 2
-num_files = 8000*num_classes
-num_samples = num_files
-num_para = 5
+num_files = 8000*num_classesC
 
 
 def load_train():
@@ -39,7 +37,9 @@ def load_train():
     # labels = []
 
     # for name in names:
-    for labelID in [0, 1]:
+    # for labelID in [0, 1]:
+    for labelID in [1]:
+
         name = names[labelID]
         for img_ind in range( int(num_files / num_classes) ):
 
@@ -78,7 +78,8 @@ def load_train():
     # print labels1.shape
     print(labels.shape)
 
-    para5 = labels[:,2:]
+    # para5 = labels[:,2:]
+    para5 = labels[:,4:]
     np.random.seed(12345)
     shuffleOrder = np.arange(X_train.shape[0])
     np.random.shuffle(shuffleOrder)
