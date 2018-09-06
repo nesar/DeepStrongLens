@@ -1,17 +1,15 @@
 '''
 Based on:
-
 https://gist.github.com/neilslater/40201a6c63b4462e6c6e458bab60d0b4
-
-
 Remaining:  1) Get std dev on predictions
             2) Deeper, wider networks ? - right now, loss function seems converging - but testing is bad
             3) Use sklearn, pipeline etc
             4) Use callbacks
             5) Plot conditional prob distribution kinda thing
             6) What metric to use to check accuracy of all testimages?
-
 '''
+
+#Code to test the model that predicts 2 lensing parameters (redshift and magnification)
 
 # -*- coding: utf-8 -*-
 import numpy as np
@@ -27,11 +25,11 @@ time_i = time.time()
 
 
 
-Dir1 = '/home/nes/Desktop/ConvNetData/lens/AllTrainTestSets/JPG/'
+Dir1 = '/users/jbbutler129/Desktop/Argonne_Files/Galaxy_Lens_Regression/JPG/'
 Dir2 = ['single/', 'stack/'][1]
 Dir3 = ['0/', '1/'][1]
 data_path = Dir1 + Dir2 + Dir3 + 'TestData/'
-names = ['lensed', 'unlensed']
+names = ['lensed', 'unlensed'][0]
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
 image_size = img_rows = 45
@@ -40,8 +38,8 @@ num_channel = 1
 # num_epoch = 10
 # batch_size = 8
 
-num_classes = 2
-num_files = num_classes*10
+num_classes = 1
+num_files = 100
 # num_para = 5
 
 
@@ -52,7 +50,7 @@ num_files = num_classes*10
 
 # loaded_model = load_model('ModelOutputs/cnn_regressionLens_test2.hdf5')
 
-DirIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/jupiter/ModelOutRegression/'
+DirIn = '/users/jbbutler129/Argonne_Files/Galaxy_Lens_Regression/JPG/Model_Runs/'
 
 
 # filelist = sorted(glob.glob(DirIn +'*.npy'))   # All
@@ -64,13 +62,18 @@ histlist = sorted(glob.glob(DirIn + hyperpara + '*.npy'))
 
 print(len(filelist))
 
-for i in range(len(filelist)):
-    fileIn = filelist[i]
-    histIn = histlist[i]
-    loaded_model = load_model(fileIn)
-    print(fileIn)
-    history = np.load(histIn)
-    print(histIn)
+#for i in range(len(filelist)):
+    # fileIn = filelist[i]
+fileIn = '/users/jbbutler129/Desktop/Argonne_Files/Galaxy_Lens_Regression/Model_Runs/RegressionStackNew_opti1_loss0_lr0.001_decay0.01_batch16_epoch10.hdf5'
+
+    #
+    # histIn = histlist[i]
+histIn = '/users/jbbutler129/Desktop/Argonne_Files/Galaxy_Lens_Regression/Model_Runs/RegressionStackNew_opti1_loss0_lr0.001_decay0.01_batch16_epoch10.npy'
+
+loaded_model = load_model(fileIn)
+print(fileIn)
+history = np.load(histIn)
+print(histIn)
 
 
 
@@ -79,17 +82,17 @@ def load_test():
     # labels = []
 
     # for name in names:
-    for labelID in [0,  1 ]:
-        name = names[labelID]
-        for img_ind in range( int(num_files / num_classes) ):
+    #for labelID in [0,  1 ]:
+        #name = names[labelID]
+    for img_ind in range( int(num_files / num_classes) ):
 
-            input_img = np.load(data_path + name + str(img_ind) + '.npy')
-            if np.isnan(input_img).any():
-                print(labelID, img_ind, ' -- ERROR: NaN')
-            else:
+        input_img = np.load(data_path + names + str(img_ind) + '.npy')
+        if np.isnan(input_img).any():
+            print(img_ind, ' -- ERROR: NaN')
+        else:
 
-                img_data_list.append(input_img)
-                # labels.append([labelID, 0.5*labelID, 0.33*labelID, 0.7*labelID, 5.0*labelID] )
+            img_data_list.append(input_img)
+            # labels.append([labelID, 0.5*labelID, 0.33*labelID, 0.7*labelID, 5.0*labelID] )
 
     img_data = np.array(img_data_list)
     img_data = img_data.astype('float32')
@@ -117,7 +120,10 @@ def load_test():
     labels = np.load(Dir1 + Dir2 + Dir3 + 'Test5para.npy')
     print(labels.shape)
 
-    para5 = labels[:,2:]
+    para5 = labels[:,5]
+    print(para5)
+    print(str(para5.shape)+' test label shape')
+    print(str(img_data.shape)+' test image shape')
     np.random.seed(12345)
     shuffleOrder = np.arange(X_test.shape[0])
     np.random.shuffle(shuffleOrder)
@@ -146,9 +152,12 @@ def read_and_normalize_test_data():
 
 
 
-
 rescaleMin, rescaleMax = np.load(Dir1 + Dir2 + Dir3 + 'RescalingMinMax5para.npy')
-print(rescaleMin.shape)
+print(str(rescaleMin.shape) + ' rescale min shape')
+print(str(rescaleMax.shape) + ' rescale max shape')
+
+rescaleMin = rescaleMin[3]
+rescaleMax = rescaleMax[3]
 
 test_data, test_target = read_and_normalize_test_data()
 test_data = test_data[0:num_files,:,:,:]
@@ -157,7 +166,7 @@ test_target = test_target[0:num_files]
 
 ########## Predictions ######################
 
-print('vel-dispersion  ellipticity  orientation  z  magnification')
+print('z  magnification')
 
 predictions = np.zeros_like(test_target)
 
@@ -184,45 +193,39 @@ fig, ax = plt.subplots(2, 3, figsize=(10, 6))
 fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.5, hspace=0.5)
 
 
-ax[0, 0].plot(  test_target[:, 0], predictions[:, 0],
-                'kx', label = 'rescaled vel-dispersion')
-ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx',
-               label = 'rescaled ellipticity')
-ax[0, 2].plot( test_target[:, 2], predictions[:, 2], 'kx',
-               label = 'rescaled orientation')
-ax[1, 0].plot( test_target[:, 3], predictions[:, 3], 'kx',
-               label = 'rescaled redshift')
-ax[1, 1].plot( test_target[:, 4], predictions[:, 4], 'kx',
-               label = 'rescaled magnification')
+ax[0, 0].plot(  test_target, predictions,
+                'kx', label = 'rescaled redshift')
+#ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx',
+               #label = 'rescaled magnification')
+#ax[0, 2].plot( test_target[:, 2], predictions[:, 2], 'kx',
+               #label = 'rescaled orientation')
+#ax[1, 0].plot( test_target[:, 3], predictions[:, 3], 'kx',
+               #label = 'rescaled redshift')
+#ax[1, 1].plot( test_target[:, 4], predictions[:, 4], 'kx',
+               #label = 'rescaled magnification')
 
 ax[0, 0].set_xlabel('true')
 ax[0, 0].set_ylabel('pred')
 ax[0, 1].set_xlabel('true')
 ax[0, 1].set_ylabel('pred')
-ax[0, 2].set_xlabel('true')
-ax[0, 2].set_ylabel('pred')
-ax[1, 0].set_xlabel('true')
-ax[1, 0].set_ylabel('pred')
-ax[1, 1].set_xlabel('true')
-ax[1, 1].set_ylabel('pred')
+#ax[0, 2].set_xlabel('true')
+#ax[0, 2].set_ylabel('pred')
+#ax[1, 0].set_xlabel('true')
+#ax[1, 0].set_ylabel('pred')
+#ax[1, 1].set_xlabel('true')
+#ax[1, 1].set_ylabel('pred')
 
 ax[0, 0].axis('equal')
 ax[0, 1].axis('equal')
-ax[0, 2].axis('equal')
-ax[1, 0].axis('equal')
-ax[1, 1].axis('equal')
+#ax[0, 2].axis('equal')
+#ax[1, 0].axis('equal')
+#ax[1, 1].axis('equal')
 
-
-
-ax[0, 0].set_title('rescaled vel-dispersion')
-ax[0, 1].set_title('rescaled ellipticity')
-ax[0, 2].set_title('rescaled orientation')
-ax[1, 0].set_title('rescaled redshift')
-ax[1, 1].set_title( 'rescaled magnification')
-
-ax[1, 2].set_visible(False)
-
-
+ax[0, 0].set_title('rescaled redshift')
+ax[0, 1].set_title('rescaled magnification')
+#ax[0, 2].set_title('rescaled orientation')
+#ax[1, 0].set_title('rescaled redshift')
+#ax[1, 1].set_title( 'rescaled magnification')
 
 plt.show()
 

@@ -1,3 +1,5 @@
+#Copy of the code to tune hyperparameters and such
+
 import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
@@ -11,7 +13,7 @@ time_i = time.time()
 
 
 
-Dir1 = '/home/nes/Desktop/ConvNetData/lens/AllTrainTestSets/JPG/'
+Dir1 = '/users/jbbutler129/Desktop/Argonne_Files/Galaxy_Lens_Regression/JPG/'
 Dir2 = ['single/', 'stack/'][1]
 Dir3 = ['0/', '1/'][1]
 data_path = Dir1 + Dir2 + Dir3 + 'TrainingData/'
@@ -20,7 +22,7 @@ data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
 num_epoch = 10
 batch_size = 16
-learning_rate = 1e-6  # Warning: lr and decay vary across optimizers
+learning_rate = 1e-2  # Warning: lr and decay vary across optimizers
 decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
@@ -29,7 +31,7 @@ image_size = img_rows = 45
 img_cols = 45
 num_channel = 1
 num_classes = 2
-num_files = 800*num_classes
+num_files = 8000*num_classes
 num_samples = num_files
 num_para = 5
 
@@ -41,7 +43,7 @@ def load_train():
     # for name in names:
     for labelID in [0, 1]:
         name = names[labelID]
-        for img_ind in range(num_files / num_classes):
+        for img_ind in range( int(num_files / num_classes) ):
 
             input_img = np.load(data_path + '/' + name + '_outputs/' + name + str(img_ind) + '.npy')
             if np.isnan(input_img).any():
@@ -215,6 +217,91 @@ def create_model_1():
     # model.compile(loss='mean_squared_error', optimizer=Adadelta())
     return model
 
+#works pretty well with both lr .001 and .01
+def create_model_2():
+
+    model = Sequential()
+
+    model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=(image_size, image_size, 1) ))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(32, 3, 3))
+    model.add(Activation('relu'))
+    #model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    #model.add(Dropout(0.25))
+
+    model.add(Convolution2D(64, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(64, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    #model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    #model.add(Dropout(0.25))
+
+    model.add(Convolution2D(128, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    #model.add(Convolution2D(128, 3, 3, border_mode='same'))
+    #model.add(Activation('relu'))
+    #model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    #model.add(Dropout(0.25))
+
+    model.add(Convolution2D(64, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(64, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    # model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Dropout(0.25))
+
+    model.add(Convolution2D(16, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(16, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    # model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Dropout(0.25))
+
+    ""
+    #model.add(Convolution2D(128, 3, 3, border_mode='same'))
+    #model.add(Activation('relu'))
+    #model.add(Convolution2D(128, 3, 3, border_mode='same'))
+    #model.add(Activation('relu'))
+    #model.add(BatchNormalization(axis=1))
+    #model.add(MaxPooling2D(pool_size=(2,2)))
+    #model.add(Dropout(0.25)
+    ""
+    model.add(Flatten())
+    model.add(Dense(1024))
+    model.add(Activation('relu'))
+    #model.add(Dropout(0.5))
+    model.add(Dense(num_para))
+    model.add(Activation('linear'))
+
+
+    if opti_id == 0:
+        sgd = SGD(lr=learning_rate, decay=decay_rate)
+        # lr = 0.01, momentum = 0., decay = 0., nesterov = False
+        model.compile(loss='mean_squared_error', optimizer=sgd)
+    elif opti_id == 1:
+        # Adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
+        adam = Adam(lr = learning_rate, decay = decay_rate)
+        model.compile(loss='mean_squared_error', optimizer= adam)
+
+    elif opti_id == 2:
+        # Adadelta = Adadelta(lr=1.0, rho=0.95, epsilon=1e-08, decay=0.0)
+        adadelta = Adadelta(lr = learning_rate, decay = decay_rate)
+        model.compile(loss='mean_squared_error', optimizer= adadelta)
+
+    else:
+        # rmsprop = RMSprop(lr=learning_rate, decay=decay_rate)
+        rmsprop = RMSprop()
+        # lr = 0.001, rho = 0.9, epsilon = 1e-8, decay = 0.
+        model.compile(loss='mean_squared_error', optimizer=rmsprop)
+
+
+    return model
+
 def create_model():
 
     model = Sequential()
@@ -225,33 +312,33 @@ def create_model():
     model.add(Convolution2D(32, 3, 3))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Convolution2D(64, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(Convolution2D(64, 3, 3, border_mode='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Convolution2D(32, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(Convolution2D(32, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Convolution2D(16, 3, 3 , border_mode='same'))
     model.add(Activation('relu'))
     model.add(Convolution2D(16, 3, 3, border_mode='same' ))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    # model.add(Dropout(0.25))
 
     model.add(Flatten())
     model.add(Dense(64))
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    # model.add(Dropout(0.5))
     model.add(Dense(num_para))
     model.add(Activation('linear'))
 
@@ -293,7 +380,7 @@ train_data, train_target = read_and_normalize_train_data()
 X_train = train_data[0:num_samples,:,:,:]
 y_train = train_target[0:num_samples]
 
-model = create_model()
+model = create_model_2()
 
 
 ModelFit = model.fit(X_train, y_train, batch_size=batch_size, nb_epoch= num_epoch, verbose=1,
@@ -326,7 +413,7 @@ if plotLossAcc:
     plt.show()
 
 
-SaveModel = False
+SaveModel = True
 if SaveModel:
     epochs = np.arange(1, num_epoch+1)
     train_loss = ModelFit.history['loss']
@@ -335,11 +422,10 @@ if SaveModel:
     training_hist = np.vstack([epochs, train_loss, val_loss])
 
 
-    fileOut = 'RegressionStack_opti' + str(opti_id) + '_loss' + str(loss_id) + '_lr' + str(learning_rate) + '_decay' + str(decay_rate) + '_batch' + str(batch_size) + '_epoch' + str(num_epoch)
+    fileOut = 'RegressionStackNew_opti' + str(opti_id) + '_loss' + str(loss_id) + '_lr' + str(learning_rate) + '_decay' + str(decay_rate) + '_batch' + str(batch_size) + '_epoch' + str(num_epoch)
 
-    model.save('ModelOutRegression/' + fileOut + '.hdf5')
-    np.save('ModelOutRegression/'+fileOut+'.npy', training_hist)
+    model.save('/users/jbbutler129/Desktop/Argonne_Files/Galaxy_Lens_Regression/Model_Runs/' + fileOut + '.hdf5')
+    np.save('/users/jbbutler129/Desktop/Argonne_Files/Galaxy_Lens_Regression/Model_Runs/' + fileOut + '.npy', training_hist)
 
 time_j = time.time()
 print(time_j - time_i, 'seconds')
-
