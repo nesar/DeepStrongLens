@@ -41,7 +41,7 @@ num_channel = 1
 # batch_size = 8
 
 num_classes = 2
-num_files = num_classes*10
+num_files = 100
 # num_para = 5
 
 
