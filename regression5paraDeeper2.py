@@ -25,7 +25,7 @@ names = ['lensed', 'unlensed'][0]
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
 num_epoch = 100
-batch_size = 32
+batch_size = 8
 learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
 decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
@@ -502,7 +502,7 @@ model = create_model_3()
 
 
 ModelFit = model.fit(X_train, y_train, batch_size=batch_size, nb_epoch= num_epoch, verbose=2,
-                     validation_split= 0.2 )
+                     validation_split= 0.1 )
 
 # model.save('ModelOutputs/cnn_regressionLens_test2.hdf5')
 
@@ -547,3 +547,73 @@ if SaveModel:
 
 time_j = time.time()
 print(time_j - time_i, 'seconds')
+
+
+
+
+
+
+
+
+########## Predictions ######################
+
+print('vel-dispersion  ellipticity  orientation  z  magnification')
+
+predictions = np.zeros_like(y_train)
+
+for i in range(num_files):
+    test_img = np.expand_dims(X_train[i], axis=0)
+    predictions[i] = model.predict(test_img, batch_size= 1, verbose=0)[0]
+
+
+
+
+import matplotlib.pylab as plt
+
+# plt.figure(10)
+fig, ax = plt.subplots(2, 3, figsize=(10, 6))
+fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.5, hspace=0.5)
+
+
+ax[0, 0].plot( y_train, predictions,
+                'kx', label = 'rescaled vel-dispersion')
+
+
+ax[0, 0].plot( [0, 1], [0, 1], 'r')
+
+
+# ax[0, 1].plot( y_train[:, 1], predictions[:, 1], 'kx',
+#                label = 'rescaled ellipticity')
+# ax[0, 2].plot( y_train[:, 2], predictions[:, 2], 'kx',
+#                label = 'rescaled orientation')
+# ax[1, 0].plot( y_train[:, 3], predictions[:, 3], 'kx',
+#                label = 'rescaled redshift')
+# ax[1, 1].plot( y_train[:, 4], predictions[:, 4], 'kx',
+#                label = 'rescaled magnification')
+
+ax[0, 0].set_xlabel('true')
+ax[0, 0].set_ylabel('pred')
+ax[0, 1].set_xlabel('true')
+ax[0, 1].set_ylabel('pred')
+ax[0, 2].set_xlabel('true')
+ax[0, 2].set_ylabel('pred')
+ax[1, 0].set_xlabel('true')
+ax[1, 0].set_ylabel('pred')
+ax[1, 1].set_xlabel('true')
+ax[1, 1].set_ylabel('pred')
+
+ax[0, 0].axis('equal')
+ax[0, 1].axis('equal')
+ax[0, 2].axis('equal')
+ax[1, 0].axis('equal')
+ax[1, 1].axis('equal')
+
+ax[0, 0].set_title('rescaled vel-dispersion')
+ax[0, 1].set_title('rescaled ellipticity')
+ax[0, 2].set_title('rescaled orientation')
+ax[1, 0].set_title('rescaled redshift')
+ax[1, 1].set_title( 'rescaled magnification')
+
+ax[1, 2].set_visible(False)
+
+plt.show()
