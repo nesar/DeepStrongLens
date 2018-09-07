@@ -40,19 +40,20 @@ num_channel = 1
 # num_epoch = 10
 # batch_size = 8
 
-num_classes = 2
-num_files = 100
+num_classes = 1
+num_files = 2000
 # num_para = 5
 
 # num_samples = 1999
 # cv_size = 2000
 
-num_epoch = 10
-batch_size = 16
-learning_rate = 1e-4  # Warning: lr and decay vary across optimizers
-decay_rate = 0.01
+num_epoch = 100
+batch_size = 8
+learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
+decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
+
 # num_epoch = 10
 # batch_size = 16
 # learning_rate = .001  # Warning: lr and decay vary across optimizers
@@ -139,7 +140,7 @@ def load_test():
     labels = np.load(Dir1 + Dir2 + Dir3 + 'Test5para.npy')
     print(labels.shape)
 
-    para5 = labels[:,2:]
+    para5 = labels[:,5]
     np.random.seed(12345)
     shuffleOrder = np.arange(X_test.shape[0])
     np.random.shuffle(shuffleOrder)
@@ -204,25 +205,25 @@ fig, ax = plt.subplots(2, 3, figsize=(10, 6))
 fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.5, hspace=0.5)
 
 
-ax[0, 0].plot(  test_target[:, 0], predictions[:, 0],
+ax[0, 0].plot(  test_target, predictions,
                 'kx', label = 'rescaled vel-dispersion')
 ax[0, 0].plot( [0, 1], [0, 1], 'r')
 
-ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx',
-               label = 'rescaled ellipticity')
-ax[0, 1].plot( [0, 1], [0, 1], 'r')
-
-ax[0, 2].plot( test_target[:, 2], predictions[:, 2], 'kx',
-               label = 'rescaled orientation')
-ax[0, 2].plot( [0, 1], [0, 1], 'r')
-
-ax[1, 0].plot( test_target[:, 3], predictions[:, 3], 'kx',
-               label = 'rescaled redshift')
-ax[1, 0].plot( [0, 1], [0, 1], 'r')
-
-ax[1, 1].plot( test_target[:, 4], predictions[:, 4], 'kx',
-               label = 'rescaled magnification')
-ax[1, 1].plot( [0, 1], [0, 1], 'r')
+# ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx',
+#                label = 'rescaled ellipticity')
+# ax[0, 1].plot( [0, 1], [0, 1], 'r')
+#
+# ax[0, 2].plot( test_target[:, 2], predictions[:, 2], 'kx',
+#                label = 'rescaled orientation')
+# ax[0, 2].plot( [0, 1], [0, 1], 'r')
+#
+# ax[1, 0].plot( test_target[:, 3], predictions[:, 3], 'kx',
+#                label = 'rescaled redshift')
+# ax[1, 0].plot( [0, 1], [0, 1], 'r')
+#
+# ax[1, 1].plot( test_target[:, 4], predictions[:, 4], 'kx',
+#                label = 'rescaled magnification')
+# ax[1, 1].plot( [0, 1], [0, 1], 'r')
 
 
 
