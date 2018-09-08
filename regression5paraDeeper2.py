@@ -24,10 +24,10 @@ data_path = Dir1 + Dir2 + Dir3 + 'TrainingData/'
 names = ['lensed', 'unlensed'][0]
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
-num_epoch = 10
+num_epoch = 100
 batch_size = 4
-learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
-decay_rate = 0.05
+learning_rate = 1e-4  # Warning: lr and decay vary across optimizers
+decay_rate = 0.01
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
 
@@ -344,7 +344,7 @@ def create_model_3():
     model.add(Activation('relu'))
     # model.add(BatchNormalization(axis=1))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.1))
+    # model.add(Dropout(0.1))
 
     model.add(Convolution2D(64, 3, 3, border_mode='same'))
     model.add(Activation('relu'))
@@ -352,7 +352,7 @@ def create_model_3():
     model.add(Activation('relu'))
     # model.add(BatchNormalization(axis=1))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.05))
 
     ""
     # model.add(Convolution2D(128, 3, 3, border_mode='same'))
@@ -374,7 +374,7 @@ def create_model_3():
     model.add(Activation('relu'))
     model.add(Dense(32))
     model.add(Activation('relu'))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.05))
     model.add(Dense(num_para))
     # model.add(Activation('linear'))
     model.add(Activation('sigmoid'))

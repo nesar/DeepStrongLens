@@ -48,9 +48,9 @@ num_files = 2000
 # cv_size = 2000
 
 num_epoch = 100
-batch_size = 8
-learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
-decay_rate = 0.1
+batch_size = 4
+learning_rate = 1e-4  # Warning: lr and decay vary across optimizers
+decay_rate = 0.01
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
 
@@ -206,7 +206,7 @@ fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.5, hs
 
 
 ax[0, 0].plot(  test_target, predictions,
-                'kx', label = 'rescaled vel-dispersion')
+                'kx', alpha = 0.1,  label = 'rescaled vel-dispersion')
 ax[0, 0].plot( [0, 1], [0, 1], 'r')
 
 # ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx',
