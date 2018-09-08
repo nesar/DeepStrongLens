@@ -25,9 +25,9 @@ names = ['lensed', 'unlensed'][0]
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
 num_epoch = 100
-batch_size = 4
+batch_size = 64
 learning_rate = 1e-4  # Warning: lr and decay vary across optimizers
-decay_rate = 0.01
+decay_rate = 0.1
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
 
@@ -583,7 +583,7 @@ fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.5, hs
 
 
 ax[0, 0].plot( y_train, predictions,
-                'kx', label = 'rescaled vel-dispersion')
+                'kx', alpha = 0.1, label = 'rescaled vel-dispersion')
 
 
 ax[0, 0].plot( [0, 1], [0, 1], 'r')
