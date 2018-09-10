@@ -25,11 +25,12 @@ names = ['lensed', 'unlensed'][0]
 data_dir_list = ['lensed_outputs', 'unlensed_outputs']
 
 num_epoch = 100
-batch_size = 64
-learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
+batch_size = 16
+learning_rate = 1e-4  # Warning: lr and decay vary across optimizers
 decay_rate = 0.0
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
+para_row = 3
 
 image_size = img_rows = 45
 img_cols = 45
@@ -85,7 +86,7 @@ def load_train():
     print(labels.shape)
 
     #*******************************#
-    para5 = labels[:,5]
+    para5 = labels[:,para_row]
     print(para5)
     print(para5.shape)
     np.random.seed(12345)
