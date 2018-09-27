@@ -49,10 +49,21 @@ num_files = 2000
 
 num_epoch = 100
 batch_size = 16
-learning_rate = 5e-4  # Warning: lr and decay vary across optimizers
+learning_rate = 1e-4  # Warning: lr and decay vary across optimizers
 decay_rate = 0.0
 opti_id = 1  # [SGD, Adadelta, RMSprop]
 loss_id = 0 # [mse, mae] # mse is always better
+para_row = 3
+
+
+num_epoch = 100
+batch_size = 16
+learning_rate = 1e-3  # Warning: lr and decay vary across optimizers
+decay_rate = 0.0
+opti_id = 1  # [SGD, Adadelta, RMSprop]
+loss_id = 0 # [mse, mae] # mse is always better
+para_row = 4
+
 
 
 # num_epoch = 10
@@ -61,6 +72,9 @@ loss_id = 0 # [mse, mae] # mse is always better
 # decay_rate = 0.01
 # opti_id = 1  # [SGD, Adadelta, RMSprop]
 # loss_id = 0 # [mse, mae] # mse is always better
+print(para_row)
+print('vel-dispersion  ellipticity  orientation  z  magnification')
+
 
 
 DirIn = '/home/nes/Dropbox/Argonne/lensData/ModelOutRegression/'
@@ -141,7 +155,8 @@ def load_test():
     labels = np.load(Dir1 + Dir2 + Dir3 + 'Test5para.npy')
     print(labels.shape)
 
-    para5 = labels[:,5]
+    # para5 = labels[:,para_row + 2]
+    para5 = labels[:,2:]
     np.random.seed(12345)
     shuffleOrder = np.arange(X_test.shape[0])
     np.random.shuffle(shuffleOrder)
@@ -199,6 +214,7 @@ for i in range(num_files):
 
 
 
+
 import matplotlib.pylab as plt
 
 # plt.figure(10)
@@ -206,28 +222,28 @@ fig, ax = plt.subplots(2, 3, figsize=(10, 6))
 fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.5, hspace=0.5)
 
 
-ax[0, 0].plot(  test_target, predictions,
-                'kx', alpha = 0.1,  label = 'rescaled vel-dispersion')
+# ax[0, 0].plot( y_train, predictions,
+#                 'kx', alpha = 0.1, label = 'rescaled vel-dispersion')
+
+
+ax[0, 0].plot( test_target[:, 0], predictions[:, 0], 'kx', alpha = 0.05,
+               label = 'rescaled vel-dispersion')
+ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx', alpha = 0.05,
+               label = 'rescaled ellipticity')
+ax[0, 2].plot( test_target[:, 2], predictions[:, 2], 'kx', alpha = 0.05,
+               label = 'rescaled orientation')
+ax[1, 0].plot( test_target[:, 3], predictions[:, 3], 'kx', alpha = 0.05,
+               label = 'rescaled redshift')
+ax[1, 1].plot( test_target[:, 4], predictions[:, 4], 'kx', alpha = 0.05,
+               label = 'rescaled magnification')
+
+
+
 ax[0, 0].plot( [0, 1], [0, 1], 'r')
-
-# ax[0, 1].plot( test_target[:, 1], predictions[:, 1], 'kx',
-#                label = 'rescaled ellipticity')
-# ax[0, 1].plot( [0, 1], [0, 1], 'r')
-#
-# ax[0, 2].plot( test_target[:, 2], predictions[:, 2], 'kx',
-#                label = 'rescaled orientation')
-# ax[0, 2].plot( [0, 1], [0, 1], 'r')
-#
-# ax[1, 0].plot( test_target[:, 3], predictions[:, 3], 'kx',
-#                label = 'rescaled redshift')
-# ax[1, 0].plot( [0, 1], [0, 1], 'r')
-#
-# ax[1, 1].plot( test_target[:, 4], predictions[:, 4], 'kx',
-#                label = 'rescaled magnification')
-# ax[1, 1].plot( [0, 1], [0, 1], 'r')
-
-
-
+ax[0, 1].plot( [0, 1], [0, 1], 'r')
+ax[0, 2].plot( [0, 1], [0, 1], 'r')
+ax[1, 0].plot( [0, 1], [0, 1], 'r')
+ax[1, 1].plot( [0, 1], [0, 1], 'r')
 
 ax[0, 0].set_xlabel('true')
 ax[0, 0].set_ylabel('pred')
